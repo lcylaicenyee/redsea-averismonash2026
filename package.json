@@ -4,7 +4,10 @@
   "description": "An application to process files related to shipping information and extract the required data automatically. Perfect for large volumes of data.",
   "main": "app.ts",
   "scripts": {
-    "test": "node src/app.ts"
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
