@@ -3,6 +3,7 @@ import { UserService } from '../services/userService';
 import { AppError } from '../middleware/errorHandler';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
+import ms, { type StringValue } from 'ms';
 
 export const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
   try {
@@ -115,10 +116,12 @@ export const loginUser = async (req: Request, res: Response): Promise<Response> 
       throw new AppError('Account is deactivated', 403);
     }
 
+    const expiryTime : StringValue = process.env.JWT_EXPIRY as StringValue || '24h';
+
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET!,
-      { expiresIn: process.env.JWT_EXPIRY || '24h' }
+      { expiresIn: expiryTime }
     );
 
     return res.status(200).json({

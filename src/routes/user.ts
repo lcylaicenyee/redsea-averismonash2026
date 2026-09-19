@@ -19,7 +19,7 @@ router.delete('/:id', userController.deleteUser);
 
 // Admin routes
 router.use((req: Request, res: Response, next: NextFunction) => {
-  if (req.user?.role !== 'admin') {
+  if (req.body.user?.role !== 'admin') {
     return res.status(403).json({ success: false, message: 'Admin access required' });
   }
   next();

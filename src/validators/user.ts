@@ -8,7 +8,7 @@ export const validateUser = (req: Request, res: Response, next: NextFunction) =>
     return res.status(400).json({
       success: false,
       errors: errors.array().map((err: ValidationError) => ({
-        field: err.path,
+        //field: err.path,
         message: err.msg
       }))
     });
