@@ -3,9 +3,11 @@ import cors from 'cors';
 
 const app = express();
 const PORT = 3000;
+const errorHandler = require('./middleware/errorHandler');
 
 app.use(cors());
 app.use(express.json());
+app.use(errorHandler);
 
 /*
 interface User {
