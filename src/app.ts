@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { connectDatabase } from './config/database';
 import { errorHandler, notFound } from './middleware/errorHandler';
 import userRoutes from './routes/user';
+import documentRoutes from './routes/document';
 
 dotenv.config();
 
@@ -32,7 +33,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1/users', userRoutes);
-
+app.use('/api/v1/documents', documentRoutes);
 // Error handling
 app.use(notFound);
 app.use(errorHandler);
