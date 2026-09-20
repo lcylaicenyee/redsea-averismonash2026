@@ -1,4 +1,5 @@
 import multer from 'multer';
+import { AppError } from './errorHandler';
 
 const storage = multer.memoryStorage();
 
@@ -16,7 +17,7 @@ export const upload = multer({
   },
   fileFilter: (_req, file, cb) => {
     if (!allowedMimeTypes.includes(file.mimetype)) {
-      return cb(new Error('Only PDF, DOCX, XLSX, and TXT files are allowed'));
+      return cb(new AppError('Only PDF, DOCX, XLSX, and TXT files are allowed', 400));
     }
 
     cb(null, true);
