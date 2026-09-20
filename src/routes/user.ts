@@ -7,13 +7,13 @@ const router = Router();
 
 // Public routes
 router.post('/login', userController.loginUser);
+router.post('/', userController.createUser);
 
 // Protected routes
 router.use(authMiddleware);
 
 router.get('/', userController.getAllUsers);
 router.get('/:id', userController.getUserById);
-router.post('/', userController.createUser);
 router.put('/:id', userController.updateUser);
 router.delete('/:id', userController.deleteUser);
 
