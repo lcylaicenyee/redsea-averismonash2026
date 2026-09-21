@@ -1,6 +1,5 @@
-import { error } from 'console';
 import { Request, Response, NextFunction } from 'express';
-import multer from 'multer';
+import mongoose from 'mongoose';
 
 export class AppError extends Error {
   statusCode: number;
@@ -26,12 +25,14 @@ export const errorHandler = (
       message: err.message
     });
   }
-if (err instanceof multer.MulterError) {
-  return res.status(400).json({
-    success: false,
-    message: err.message
-  });
-}
+
+  if (err instanceof mongoose.Error) {
+    return res.status(400).json({
+      success: false,
+      message: 'Database error: ' + err.message
+    });
+  }
+
   console.error('Error:', err);
   return res.status(500).json({
     success: false,

@@ -18,8 +18,13 @@ export interface BLComparisonResult {
     | 'missing_attachment' 
     | 'unreadable' 
     | 'missing_value';
-  siFields?: FieldComparison[];
-  blFields?: FieldComparison[];
+  siFields?: Field[]; //FieldComparison[];
+  blFields?: Field[]; //FieldComparison[];
+}
+
+export interface Field {
+  field: string,
+  value: string | null;
 }
 
 export interface FieldComparison {

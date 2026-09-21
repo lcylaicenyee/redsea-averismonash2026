@@ -7,9 +7,9 @@ export interface IEmailRecord extends Document {
   body: string;
   category: string;
   attachments: string[];
-  siData: unknown;
-  blData: unknown;
-  comparisonResult: unknown;
+  siData: mongoose.Document;
+  blData: mongoose.Document;
+  comparisonResult: mongoose.Document;
   processedAt: Date;
   processedBy?: string;
 }

@@ -1,6 +1,5 @@
-import { Readable } from 'stream';
 import { readFileSync } from 'fs';
-import { parse as parseJSON } from 'json5';
+import { parse as parseJSON5 } from 'json5';
 
 export interface ParsedAttachment {
   name: string;
@@ -13,33 +12,18 @@ export interface ParsedEmail {
   from: string;
   subject: string;
   body: string;
-  attachments: ParsedAttachment[];
+  attachments: string[];
 }
 
 export async function parseEmailFile(filePath: string): Promise<ParsedEmail> {
   try {
     const content = readFileSync(filePath, 'utf-8');
-    const emailData = parseJSON(content);
+    const emailData = parseJSON5(content);
     
-    const attachments: ParsedAttachment[] = [];
+    const attachments: string[] = [];
     
     if (emailData.attachments && Array.isArray(emailData.attachments)) {
-      for (const attachmentPath of emailData.attachments) {
-        try {
-          const attachmentContent = readFileSync(attachmentPath, 'utf-8');
-          attachments.push({
-            name: attachmentPath,
-            content: attachmentContent,
-            buffer: Buffer.from(attachmentContent)
-          });
-        } catch (err) {
-          attachments.push({
-            name: attachmentPath,
-            content: '',
-            buffer: undefined
-          });
-        }
-      }
+      attachments.push(...emailData.attachments);
     }
     
     return {
@@ -55,52 +39,44 @@ export async function parseEmailFile(filePath: string): Promise<ParsedEmail> {
 }
 
 export function parseAttachmentContent(
-  content: string,
-  attachmentType: string = 'text'
+  content: string
 ): Record<string, unknown> {
   try {
-    if (attachmentType === 'json') {
+    // Try JSON first
+    try {
       return JSON.parse(content);
-    }
-    
-    // For text files, try to detect structure
-    const lines = content.split('\n').map(line => line.trim()).filter(line => line);
-    
-    const result: Record<string, unknown> = {};
-    
-    // Simple key-value parsing
-    lines.forEach(line => {
-      if (line.includes(':')) {
-        const [key, ...valueParts] = line.split(':');
-        const value = valueParts.join(':').trim();
-        result[key.trim()] = value;
+    } catch {
+      // Try JSON5
+      try {
+        return parseJSON5(content);
+      } catch {
+        // Try text parsing
+        const lines = content.split('\n').filter(line => line.trim());
+        const data: Record<string, unknown> = {};
+        
+        lines.forEach(line => {
+          if (line.includes(':')) {
+            const [key, ...valueParts] = line.split(':');
+            data[key.trim()] = valueParts.join(':').trim();
+          }
+        });
+        
+        return data;
       }
-    });
-    
-    return result;
+    }
   } catch (error) {
     return {};
   }
 }
 
 export function extractFieldFromAttachment(
-  attachments: ParsedAttachment[],
-  fieldName: string,
-  fieldMappings: Record<string, string>
+  content: string,
+  fieldName: string
 ): string | null {
-  for (const attachment of attachments) {
-    const parsedData = parseAttachmentContent(attachment.content);
-    
-    // Check direct field name
-    if (parsedData[fieldName]) {
-      return String(parsedData[fieldName]).trim();
-    }
-    
-    // Check mapped field names
-    const mappedName = fieldMappings[fieldName];
-    if (mappedName && parsedData[mappedName]) {
-      return String(parsedData[mappedName]).trim();
-    }
+  const parsedData = parseAttachmentContent(content);
+  
+  if (parsedData[fieldName]) {
+    return String(parsedData[fieldName]).trim();
   }
   
   return null;
