@@ -136,13 +136,13 @@ export const getEmailRecordByEmailId = async (
         },
         document: result.document ? {
           _id: result.document._id.toString(),
-          originalName: result.document.originalName,
-          fileName: result.document.fileName,
-          mimeType: result.document.mimeType,
-          size: result.document.size,
-          uploadedBy: result.document.uploadedBy,
-          createdAt: result.document.createdAt,
-          updatedAt: result.document.updatedAt
+          originalName: result.document.get("originalName"),
+          fileName: result.document.get("fileName"),
+          mimeType: result.document.get("mimeType"),
+          size: result.document.get("size"),
+          uploadedBy: result.document.get("uploadedBy"),
+          createdAt: result.document.get("createdAt"),
+          updatedAt: result.document.get("updatedAt")
         } : null,
         gridFsData: result.gridFsData
       }
